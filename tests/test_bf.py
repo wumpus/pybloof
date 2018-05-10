@@ -1,5 +1,6 @@
 from array import array
 from base64 import b64encode
+import six
 import _pybloof
 
 
@@ -23,9 +24,15 @@ def test_long_pybloof():
     assert 1015 in dmc
     assert 2015 not in dmc
 
-    origin = b64encode(dmc.to_byte_array().tostring())
+    if six.PY3:
+        origin = b64encode(dmc.to_byte_array().tobytes())
+    else:
+        origin = b64encode(dmc.to_byte_array().tostring())
     dmc_2 = _pybloof.LongBloomFilter.from_byte_array(dmc.to_byte_array())
-    clone = b64encode(dmc_2.to_byte_array().tostring())
+    if six.PY3:
+        clone = b64encode(dmc_2.to_byte_array().tobytes())
+    else:
+        clone = b64encode(dmc_2.to_byte_array().tostring())
     assert origin == clone
 
     assert 1015 in dmc_2
